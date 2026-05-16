@@ -27,6 +27,10 @@ dev = [
 [project.scripts]
 kyc-evals = "kyc_agent_evals.runner:app"
 
+[tool.setuptools.packages.find]
+include = ["kyc_agent_evals*"]
+exclude = ["data*", "docs*", "outputs*", "tests*"]
+
 [tool.ruff]
 line-length = 100
 target-version = "py310"
