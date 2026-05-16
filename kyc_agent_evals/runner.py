@@ -63,12 +63,23 @@ def main(
         "-m",
         help="Optional model override for Anthropic or OpenAI adapters.",
     ),
+    limit: int | None = typer.Option(
+        None,
+        "--limit",
+        help="Optional maximum number of scenarios to run. Useful for API-cost smoke tests.",
+        min=1,
+    ),
 ) -> None:
     selected_agent = build_agent(agent, model=model)
     loaded = load_scenarios(scenarios)
+    if limit is not None:
+        loaded = loaded[:limit]
 
     results = []
-    table = Table(title=f"Agentic KYC Control Eval Results — {agent}")
+    table_title = f"Agentic KYC Control Eval Results — {agent}"
+    if limit is not None:
+        table_title = f"{table_title} — first {limit} scenario(s)"
+    table = Table(title=table_title)
     table.add_column("Scenario")
     table.add_column("Type")
     table.add_column("Score")
@@ -81,6 +92,7 @@ def main(
             {
                 "agent": agent,
                 "model": model,
+                "limit": limit,
                 "scenario": scenario.model_dump(),
                 "agent_response": response.model_dump(),
                 "evaluation": evaluation.model_dump(),
